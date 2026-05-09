@@ -3,4 +3,6 @@ Name=Stig View
 Exec=stig-view
 Icon=io.github.joshuardecker.stig-view
 Type=Application
-Categories=Utility;
+Terminal=false
+Categories=Utility;Development;Security;
+Keywords=STIG;Security;DISA;Compliance;Xylok;
