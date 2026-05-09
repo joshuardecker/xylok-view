@@ -17,6 +17,7 @@ modules:
       - install -Dm644 io.github.joshuardecker.stig-view.desktop /app/share/applications/io.github.joshuardecker.stig-view.desktop
       - install -Dm644 logo-16.png /app/share/icons/hicolor/16x16/apps/io.github.joshuardecker.stig-view.png
       - install -Dm644 logo-32.png /app/share/icons/hicolor/32x32/apps/io.github.joshuardecker.stig-view.png
+      - install -Dm644 logo-48.png /app/share/icons/hicolor/48x48/apps/io.github.joshuardecker.stig-view.png
       - install -Dm644 logo-64.png /app/share/icons/hicolor/64x64/apps/io.github.joshuardecker.stig-view.png
       - install -Dm644 logo-128.png /app/share/icons/hicolor/128x128/apps/io.github.joshuardecker.stig-view.png
       - install -Dm644 logo-256.png /app/share/icons/hicolor/256x256/apps/io.github.joshuardecker.stig-view.png
@@ -30,6 +31,8 @@ modules:
         path: assets/logo/logo-16.png
       - type: file
         path: assets/logo/logo-32.png
+      - type: file
+        path: assets/logo/logo-48.png
       - type: file
         path: assets/logo/logo-64.png
       - type: file

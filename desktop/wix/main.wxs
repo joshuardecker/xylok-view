@@ -19,6 +19,8 @@
       InstallScope='perMachine'
       Platform='x64' />
 
+    <Icon Id='AppIcon' SourceFile='$(sys.SOURCEFILEDIR)..\..\assets\logo\logo.ico' />
+
     <MajorUpgrade
       Schedule='afterInstallInitialize'
       DowngradeErrorMessage='A newer version of Stig View is already installed.' />
@@ -43,7 +45,8 @@
             Name='Stig View'
             Description='DISA STIG viewer'
             Target='[APPLICATIONROOTDIRECTORY]stig-view.exe'
-            WorkingDirectory='APPLICATIONROOTDIRECTORY' />
+            WorkingDirectory='APPLICATIONROOTDIRECTORY'
+            Icon='AppIcon' />
           <RemoveFolder Id='CleanUpStartMenuFolder' On='uninstall' />
           <RegistryValue Root='HKCU'
             Key='Software\Joshua Decker\Stig View'

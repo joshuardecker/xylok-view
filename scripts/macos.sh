@@ -28,16 +28,23 @@ mkdir -p "$APP_BUNDLE/Contents/Resources"
 
 cp target/release/stig-view "$APP_BUNDLE/Contents/MacOS/stig-view"
 
-# Generate .icns from PNG using built-in macOS tools
+# Generate .icns from individual PNG sizes
 ICONSET="$PROJECT_ROOT/StigView.iconset"
 mkdir -p "$ICONSET"
-for size in 16 32 128 256 512; do
-    sips -z $size $size assets/io.github.joshuardecker.stig-view.png \
-        --out "$ICONSET/icon_${size}x${size}.png" &>/dev/null
-    double=$((size * 2))
-    sips -z $double $double assets/io.github.joshuardecker.stig-view.png \
-        --out "$ICONSET/icon_${size}x${size}@2x.png" &>/dev/null
-done
+
+# Map individual logo PNGs into the iconset at exact sizes
+# Retina (@2x) sizes use the next resolution up
+cp assets/logo/logo-16.png      "$ICONSET/icon_16x16.png"
+cp assets/logo/logo-32.png      "$ICONSET/icon_16x16@2x.png"
+cp assets/logo/logo-32.png      "$ICONSET/icon_32x32.png"
+cp assets/logo/logo-64.png      "$ICONSET/icon_32x32@2x.png"
+cp assets/logo/logo-128.png     "$ICONSET/icon_128x128.png"
+cp assets/logo/logo-256.png     "$ICONSET/icon_128x128@2x.png"
+cp assets/logo/logo-256.png     "$ICONSET/icon_256x256.png"
+cp assets/logo/logo-512.png     "$ICONSET/icon_256x256@2x.png"
+cp assets/logo/logo-512.png     "$ICONSET/icon_512x512.png"
+cp assets/logo/logo-1024.png    "$ICONSET/icon_512x512@2x.png"
+
 iconutil -c icns "$ICONSET" -o "$APP_BUNDLE/Contents/Resources/stig-view.icns"
 rm -rf "$ICONSET"
 
@@ -74,7 +81,7 @@ EOF
 # ---------------------------------------------------------------------------
 if [[ -n "${SIGN_IDENTITY:-}" ]]; then
     echo "==> Signing $APP_BUNDLE..."
-    codesign --deep --force --sign "$SIGN_IDENTITY" "$APP_BUNDLE"
+    codesign --deep --force --options runtime --sign "$SIGN_IDENTITY" "$APP_BUNDLE"
 else
     echo "==> Skipping signing (SIGN_IDENTITY not set)"
 fi
