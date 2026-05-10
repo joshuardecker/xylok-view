@@ -219,7 +219,7 @@ fn parse_with(markdown: &str) -> impl Iterator<Item = Item> + '_ {
         if let Some(scope) = stack.last_mut() {
             match scope {
                 Scope::List(list) => {
-                    list.bullets.last_mut().expect("item context").push(item);
+                    list.bullets.last_mut()?.push(item);
                 }
             }
             None

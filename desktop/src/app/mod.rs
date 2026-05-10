@@ -1,8 +1,9 @@
 /// Contains the app internal code.
 mod app;
-/// Contains command logic, such as turning a string into a command, and running it.
-mod command;
+/// Detect whether the user is running the latest release.
 mod latest_release;
+/// Contains search logic.
+mod search;
 /// Contains settings logic, like saving to the disk.
 mod settings;
 /// Contains the logic for remembering when benchmarks were last opened, and saving this to the disk.

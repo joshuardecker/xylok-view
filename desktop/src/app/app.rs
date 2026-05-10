@@ -4,7 +4,7 @@ use rfd::AsyncFileDialog;
 use std::time::Instant;
 use stig_view_core::{Benchmark, Format, detect_stig_format, load_ckl, load_v1_1};
 
-use crate::app::command::*;
+use crate::app::search::*;
 use crate::app::*;
 use crate::ui::{APP_ICON, THEME_COFFEE, THEME_DARK, THEME_HIGH_CONTRAST, THEME_LIGHT};
 
