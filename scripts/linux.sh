@@ -45,8 +45,8 @@ if command -v appimagetool &>/dev/null; then
     mkdir -p "$APPDIR/usr/bin"
 
     cp target/release/stig-view "$APPDIR/usr/bin/stig-view"
-    cp assets/io.github.joshuardecker.stig-view.desktop "$APPDIR/stig-view.desktop"
-    cp assets/io.github.joshuardecker.stig-view.png "$APPDIR/io.github.joshuardecker.stig-view.png"
+    cp assets/io.github.joshuardecker.stig-view.desktop "$APPDIR/io.github.joshuardecker.stig-view.desktop"
+    cp assets/logo/logo-512.png "$APPDIR/io.github.joshuardecker.stig-view.png"
 
     cat > "$APPDIR/AppRun" << 'APPRUN'
 #!/bin/bash

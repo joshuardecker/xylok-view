@@ -24,7 +24,7 @@ jobs:
           key: windows-cargo-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Install cargo-wix
-        run: cargo install cargo-wix
+        run: cargo install cargo-wix --force
 
       - name: Build
         shell: bash

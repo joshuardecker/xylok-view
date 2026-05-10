@@ -8,6 +8,7 @@ finish-args:
   - --socket=fallback-x11
   - --device=dri
   - --share=ipc
+  - --share=network
   - --filesystem=host
 modules:
   - name: stig-view-module
@@ -15,11 +16,29 @@ modules:
     build-commands:
       - install -Dm755 stig-view /app/bin/stig-view
       - install -Dm644 io.github.joshuardecker.stig-view.desktop /app/share/applications/io.github.joshuardecker.stig-view.desktop
-      - install -Dm644 io.github.joshuardecker.stig-view.png /app/share/icons/hicolor/512x512/apps/io.github.joshuardecker.stig-view.png
+      - install -Dm644 logo-16.png /app/share/icons/hicolor/16x16/apps/io.github.joshuardecker.stig-view.png
+      - install -Dm644 logo-32.png /app/share/icons/hicolor/32x32/apps/io.github.joshuardecker.stig-view.png
+      - install -Dm644 logo-48.png /app/share/icons/hicolor/48x48/apps/io.github.joshuardecker.stig-view.png
+      - install -Dm644 logo-64.png /app/share/icons/hicolor/64x64/apps/io.github.joshuardecker.stig-view.png
+      - install -Dm644 logo-128.png /app/share/icons/hicolor/128x128/apps/io.github.joshuardecker.stig-view.png
+      - install -Dm644 logo-256.png /app/share/icons/hicolor/256x256/apps/io.github.joshuardecker.stig-view.png
+      - install -Dm644 logo-512.png /app/share/icons/hicolor/512x512/apps/io.github.joshuardecker.stig-view.png
     sources:
       - type: file
         path: target/release/stig-view
       - type: file
         path: assets/io.github.joshuardecker.stig-view.desktop
       - type: file
-        path: assets/io.github.joshuardecker.stig-view.png
+        path: assets/logo/logo-16.png
+      - type: file
+        path: assets/logo/logo-32.png
+      - type: file
+        path: assets/logo/logo-48.png
+      - type: file
+        path: assets/logo/logo-64.png
+      - type: file
+        path: assets/logo/logo-128.png
+      - type: file
+        path: assets/logo/logo-256.png
+      - type: file
+        path: assets/logo/logo-512.png

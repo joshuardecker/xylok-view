@@ -35,5 +35,4 @@ pub static TRASH: LazyLock<Handle> =
     LazyLock::new(|| Handle::from_memory(include_bytes!("../../../assets/images/trash.svg")));
 
 /// Just the bytes of the app icon png file.
-pub static APP_ICON: &[u8] =
-    include_bytes!("../../../assets/io.github.joshuardecker.stig-view.png");
+pub static APP_ICON: &[u8] = include_bytes!("../../../assets/logo/logo-1024.png");

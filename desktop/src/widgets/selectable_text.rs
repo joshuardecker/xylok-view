@@ -1,7 +1,7 @@
 use std::borrow::Cow;
 
 use iced::{
-    Element, Length, Pixels, Rectangle, Size, Theme,
+    Color, Element, Length, Pixels, Rectangle, Size, Theme,
     advanced::{
         Clipboard, Layout, Shell, Widget,
         clipboard::Kind as ClipboardKind,
@@ -20,12 +20,15 @@ use iced::{
 use iced_graphics::text::Paragraph as ConcreteP;
 use unicode_segmentation::UnicodeSegmentation as _;
 
-/// Text that the user can select with a mouse and copy to the clipboard.
+/// Text that can be highlighted, selected with a mouse, and copied to the clipboard.
 pub struct SelectableText<'a> {
     content: Cow<'a, str>,
     size: Option<f32>,
     width: Length,
     align_x: text::Alignment,
+    highlight_patterns: Vec<(Cow<'a, str>, Box<dyn Fn(&Theme) -> Color + 'a>)>,
+    /// Pre-computed highlight spans: (line_idx, byte_from, byte_to, pattern_idx).
+    computed_highlights: Vec<(usize, usize, usize, usize)>,
 }
 
 struct State {
@@ -43,6 +46,8 @@ pub fn selectable_text<'a>(content: impl Into<Cow<'a, str>>) -> SelectableText<'
         size: None,
         width: Length::Shrink,
         align_x: text::Alignment::Default,
+        highlight_patterns: Vec::new(),
+        computed_highlights: Vec::new(),
     }
 }
 
@@ -65,6 +70,32 @@ impl<'a> SelectableText<'a> {
     pub fn center(self) -> Self {
         self.align_x(Horizontal::Center)
     }
+
+    /// Highlight the given string with the given color.
+    /// Silently does nothing if the input is empty.
+    pub fn highlight_str(
+        mut self,
+        pattern: impl Into<Cow<'a, str>>,
+        color: impl Fn(&Theme) -> Color + 'a,
+    ) -> Self {
+        let pattern = pattern.into();
+        if pattern.is_empty() {
+            return self;
+        }
+        let pattern_idx = self.highlight_patterns.len();
+        for (line_idx, line) in self.content.split('\n').enumerate() {
+            let mut search_start = 0;
+            while let Some(rel) = line[search_start..].find(pattern.as_ref()) {
+                let from = search_start + rel;
+                let to = from + pattern.len();
+                self.computed_highlights
+                    .push((line_idx, from, to, pattern_idx));
+                search_start = to;
+            }
+        }
+        self.highlight_patterns.push((pattern, Box::new(color)));
+        self
+    }
 }
 
 /// Returns (x, width) per visual line within `buffer_line` for the selected byte range [from, to).
@@ -74,7 +105,10 @@ fn highlight_line(
     from: usize,
     to: usize,
 ) -> Vec<(f32, f32)> {
-    let layout = buffer_line.layout_opt().map(|v| v.as_slice()).unwrap_or(&[]);
+    let layout = buffer_line
+        .layout_opt()
+        .map(|v| v.as_slice())
+        .unwrap_or(&[]);
 
     layout
         .iter()
@@ -112,8 +146,81 @@ fn highlight_line(
 fn visual_lines_before(buffer: &cosmic_text::Buffer, line_idx: usize) -> usize {
     buffer.lines[..line_idx]
         .iter()
-        .map(|l| l.layout_opt().map(|v| v.len()).unwrap_or(0))
+        .map(|l| l.layout_opt().map(|v| v.len()).unwrap_or(1).max(1))
         .sum()
+}
+
+/// Like `buffer.hit(x, y)` but falls back to a y-based line lookup when `hit()` returns
+/// `None`. This handles blank lines, which have no glyphs and thus can't be hit directly.
+/// Returns `(logical_line_index, byte_offset)`.
+fn hit_or_nearest(buffer: &cosmic_text::Buffer, x: f32, y: f32) -> Option<(usize, usize)> {
+    if let Some(c) = buffer.hit(x, y) {
+        return Some((c.line, c.index));
+    }
+
+    if buffer.lines.is_empty() {
+        return None;
+    }
+
+    let line_height = buffer.metrics().line_height;
+    if line_height <= 0.0 {
+        return None;
+    }
+
+    let target_visual = (y / line_height).max(0.0) as usize;
+    let mut visual_start = 0usize;
+
+    for (i, line) in buffer.lines.iter().enumerate() {
+        // Blank lines may have 0 layout entries; treat them as occupying 1 visual line.
+        let visual_count = line.layout_opt().map(|v| v.len()).unwrap_or(1).max(1);
+        if target_visual < visual_start + visual_count || i + 1 == buffer.lines.len() {
+            return Some((i, line.text().len()));
+        }
+        visual_start += visual_count;
+    }
+
+    let last = buffer.lines.len() - 1;
+    Some((last, buffer.lines[last].text().len()))
+}
+
+/// Draws highlight quads for a byte range within a single buffer line. Returns the number of
+/// visual sub-lines consumed, so callers tracking a running visual offset can advance it.
+fn draw_highlight_span<R>(
+    renderer: &mut R,
+    bounds: Rectangle,
+    buffer_line: &cosmic_text::BufferLine,
+    from: usize,
+    to: usize,
+    visual_line_start: usize,
+    line_height: f32,
+    color: Color,
+) -> usize
+where
+    R: iced::advanced::text::Renderer<Paragraph = ConcreteP, Font = iced::Font>,
+{
+    let spans = highlight_line(buffer_line, from, to);
+    let count = buffer_line
+        .layout_opt()
+        .map(|v| v.len())
+        .unwrap_or(1)
+        .max(1);
+    for (sub, (x, width)) in spans.into_iter().enumerate() {
+        if width > 0.0 {
+            renderer.fill_quad(
+                renderer::Quad {
+                    bounds: Rectangle {
+                        x: bounds.x + x,
+                        y: bounds.y + (visual_line_start + sub) as f32 * line_height,
+                        width,
+                        height: line_height,
+                    },
+                    ..renderer::Quad::default()
+                },
+                color,
+            );
+        }
+    }
+    count
 }
 
 impl<'a, Message, R> Widget<Message, Theme, R> for SelectableText<'a>
@@ -182,6 +289,27 @@ where
         let state = tree.state.downcast_ref::<State>();
         let bounds = layout.bounds();
 
+        if !self.computed_highlights.is_empty() {
+            let buffer = state.paragraph.raw().buffer();
+            let line_height = buffer.metrics().line_height;
+
+            for &(line_idx, from, to, pattern_idx) in &self.computed_highlights {
+                let buffer_line = &buffer.lines[line_idx];
+                let visual_offset = visual_lines_before(buffer, line_idx);
+                let color = self.highlight_patterns[pattern_idx].1(theme);
+                draw_highlight_span(
+                    renderer,
+                    bounds,
+                    buffer_line,
+                    from,
+                    to,
+                    visual_offset,
+                    line_height,
+                    color,
+                );
+            }
+        }
+
         if let Some(((anchor_line, anchor_idx), (focus_line, focus_idx))) = state.selection {
             let (start_line, start_idx, end_line, end_idx) =
                 if (anchor_line, anchor_idx) <= (focus_line, focus_idx) {
@@ -212,23 +340,16 @@ where
                         buffer_line.text().len()
                     };
 
-                    for (x, width) in highlight_line(buffer_line, from, to) {
-                        if width > 0.0 {
-                            renderer.fill_quad(
-                                renderer::Quad {
-                                    bounds: Rectangle {
-                                        x: bounds.x + x,
-                                        y: bounds.y + visual_offset as f32 * line_height,
-                                        width,
-                                        height: line_height,
-                                    },
-                                    ..renderer::Quad::default()
-                                },
-                                selection_color,
-                            );
-                        }
-                        visual_offset += 1;
-                    }
+                    visual_offset += draw_highlight_span(
+                        renderer,
+                        bounds,
+                        buffer_line,
+                        from,
+                        to,
+                        visual_offset,
+                        line_height,
+                        selection_color,
+                    );
                 }
             }
         }
@@ -264,11 +385,7 @@ where
             Event::Mouse(mouse_event) => match mouse_event {
                 mouse::Event::ButtonPressed(mouse::Button::Left) => {
                     if let Some(mouse_pos) = cursor.position_in(layout.bounds()) {
-                        let click = Click::new(
-                            mouse_pos,
-                            mouse::Button::Left,
-                            state.last_click,
-                        );
+                        let click = Click::new(mouse_pos, mouse::Button::Left, state.last_click);
 
                         if let Some(c) =
                             state.paragraph.raw().buffer().hit(mouse_pos.x, mouse_pos.y)
@@ -318,16 +435,14 @@ where
                     {
                         if let Some(mouse_pos) = cursor.position_in(layout.bounds()) {
                             if let Some(((anchor_line, anchor_idx), _)) = state.selection {
-                                let focus = state
-                                    .paragraph
-                                    .raw()
-                                    .buffer()
-                                    .hit(mouse_pos.x, mouse_pos.y)
-                                    .map(|c| (c.line, c.index));
+                                let focus = hit_or_nearest(
+                                    state.paragraph.raw().buffer(),
+                                    mouse_pos.x,
+                                    mouse_pos.y,
+                                );
 
                                 if let Some(focus_pos) = focus {
-                                    state.selection =
-                                        Some(((anchor_line, anchor_idx), focus_pos));
+                                    state.selection = Some(((anchor_line, anchor_idx), focus_pos));
                                     shell.request_redraw();
                                 }
                             }
@@ -347,8 +462,7 @@ where
                 modifiers,
                 ..
             }) if c.as_str() == "c" && modifiers.command() => {
-                if let Some(((anchor_line, anchor_idx), (focus_line, focus_idx))) =
-                    state.selection
+                if let Some(((anchor_line, anchor_idx), (focus_line, focus_idx))) = state.selection
                 {
                     let (start_line, start_idx, end_line, end_idx) =
                         if (anchor_line, anchor_idx) <= (focus_line, focus_idx) {

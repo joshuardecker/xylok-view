@@ -7,6 +7,7 @@ pub struct AppSettings {
     pub theme: AppTheme,
     pub default_display_type: DisplayType,
     pub animate: bool,
+    pub notify_if_update: bool,
 }
 
 #[derive(Debug, Clone)]
@@ -20,6 +21,7 @@ impl AppSettings {
             theme: AppTheme::Dark,
             default_display_type: DisplayType::GroupId,
             animate: true,
+            notify_if_update: true,
         }
     }
 

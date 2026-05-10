@@ -109,7 +109,6 @@ fn test_xccdfv1_1_detection() {
 fn test_xccdfv1_2_detection() {
     let format =
         detect_stig_format("../test_assets/U_MS_Windows_10_V3R7_STIG_SCAP_1-3_Benchmark.zip");
-    eprintln!("{:?}", &format);
     assert!(matches!(format, Some(Format::XccdfV1_2)));
 }
 

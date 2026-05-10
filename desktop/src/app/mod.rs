@@ -1,8 +1,9 @@
 /// Contains the app internal code.
 mod app;
-/// Contains command logic, such as turning a string into a command, and running it.
-mod command;
+/// Detect whether the user is running the latest release.
 mod latest_release;
+/// Contains search logic.
+mod search;
 /// Contains settings logic, like saving to the disk.
 mod settings;
 /// Contains the logic for remembering when benchmarks were last opened, and saving this to the disk.
@@ -49,6 +50,8 @@ pub struct App {
     pub stig_list_hash: u64,
     /// What data should be displayed in the rules list.
     pub display_type: DisplayType,
+    /// The keyword / phrase the user is searching for.
+    pub filter_string: String,
 
     /// The opacity of the main element, the data of the current rule.
     pub main_col_opacity: f32,
@@ -121,12 +124,15 @@ pub enum Message {
     SaveDisplayType(DisplayType),
 
     SaveAnimate(bool),
+    SaveUpdateNotify(bool),
 
     ReturnHome,
 
     Tick(Instant),
 
     DoNothing,
+
+    OpenURL(&'static str),
 }
 
 /// The color theme of the app.

@@ -4,7 +4,7 @@ use rfd::AsyncFileDialog;
 use std::time::Instant;
 use stig_view_core::{Benchmark, Format, detect_stig_format, load_ckl, load_v1_1};
 
-use crate::app::command::*;
+use crate::app::search::*;
 use crate::app::*;
 use crate::ui::{APP_ICON, THEME_COFFEE, THEME_DARK, THEME_HIGH_CONTRAST, THEME_LIGHT};
 
@@ -18,6 +18,12 @@ impl App {
     pub fn new() -> (Self, Task<Message>) {
         let settings = AppSettings::load().unwrap_or(AppSettings::default());
         let last_opened = TimeLastOpened::load().unwrap_or(TimeLastOpened::new());
+
+        let mut tasks = vec![window::oldest().map(Message::InitWindow)];
+
+        if settings.notify_if_update {
+            tasks.push(Task::done(Message::FetchLatestVersion));
+        }
 
         (
             Self {
@@ -34,17 +40,15 @@ impl App {
                 last_opened,
                 home_menu_hash: 0,
                 stig_list_hash: 0,
-
                 display_type: settings.default_display_type,
+                filter_string: String::new(),
+
                 main_col_opacity: 1.0,
                 main_col_last_tick: None,
                 popup_opacity: 1.0,
                 popup_last_tick: None,
             },
-            Task::batch(vec![
-                window::oldest().map(Message::InitWindow),
-                Task::done(Message::FetchLatestVersion),
-            ]),
+            Task::batch(tasks),
         )
     }
 
@@ -432,6 +436,15 @@ impl App {
 
                 match command {
                     Some(command) => {
+                        // If the command is a phrase, highlight that phrase.
+                        // Otherwise, highlight nothing.
+                        match command {
+                            Command::Phrase(ref phrase) => {
+                                self.filter_string = phrase.clone();
+                            }
+                            Command::Reset => self.filter_string = "".into(),
+                        }
+
                         let new_pins = run_search_cmd(
                             command,
                             &self.benchmark,
@@ -567,6 +580,12 @@ impl App {
                 Task::done(Message::SaveSettings)
             }
 
+            Message::SaveUpdateNotify(notify) => {
+                self.settings.notify_if_update = notify;
+
+                Task::done(Message::SaveSettings)
+            }
+
             Message::ReturnHome => {
                 self.benchmark = Benchmark::empty();
                 self.background_benchmarks = Vec::new();
@@ -606,6 +625,12 @@ impl App {
             }
 
             Message::DoNothing => Task::none(),
+
+            Message::OpenURL(url) => {
+                let _ = open::that(url);
+
+                Task::none()
+            }
         }
     }
 

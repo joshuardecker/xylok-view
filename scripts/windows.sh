@@ -11,15 +11,16 @@ cd "$PROJECT_ROOT"
 # All path discovery runs inside PowerShell to keep separators clean.
 # vswhere.exe is always present on Windows CI runners and VS installations.
 # ---------------------------------------------------------------------------
-export VCToolsRedistMSMDir=$(powershell -Command "
+export VCToolsRedistMSM=$(powershell -Command "
   \$vswhere = 'C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe'
   \$vs = & \$vswhere -latest -products '*' -property installationPath
   \$base = Join-Path \$vs 'VC\Redist\MSVC'
   \$ver = (Get-ChildItem \$base | Sort-Object Name -Descending | Select-Object -First 1).Name
-  (Join-Path \$base \"\$ver\MergeModules\") + '\\'
+  \$msmDir = Join-Path \$base \"\$ver\MergeModules\"
+  (Get-ChildItem \$msmDir -Filter 'Microsoft_VC*_CRT_x64.msm' | Select-Object -First 1 -ExpandProperty FullName)
 " | tr -d '\r')
 
-echo "==> VC Redist merge modules: $VCToolsRedistMSMDir"
+echo "==> VC Redist merge module: $VCToolsRedistMSM"
 
 # ---------------------------------------------------------------------------
 # Build

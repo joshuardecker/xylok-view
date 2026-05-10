@@ -18,7 +18,7 @@ use stig_view_core::CKLStatus;
 
 use crate::app::*;
 use crate::ui::styles::*;
-use crate::widgets::selectable_text;
+use crate::widgets::{markdown, selectable_text};
 
 /// The default seperation between elements.
 /// I use magic values around because they look better.
@@ -471,19 +471,25 @@ impl App {
             None => return self.display_empty(),
         };
 
-        // Content of the STIG.
-        let content = column![
+        let lazy_widget = lazy((&stig_rule.group_id, &self.filter_string), |_| {
+            let content = column![
             row![
                 column![
                     text("Group ID").size(18),
                     space().height(SEPERATION),
-                    selectable_text(&stig_rule.group_id),
+                    selectable_text(stig_rule.group_id.clone()).highlight_str(
+                        self.filter_string.clone(),
+                        |theme| theme.extended_palette().primary.weak.color
+                    ),
                     space().height(SEPERATION),
                     rule::horizontal(2),
                     space().height(SEPERATION),
                     text("Severity").size(18),
                     space().height(SEPERATION),
-                    selectable_text(stig_rule.severity.as_str()),
+                    selectable_text(stig_rule.severity.as_str()).highlight_str(
+                        self.filter_string.clone(),
+                        |theme| theme.extended_palette().primary.weak.color
+                    ),
                 ]
                 .align_x(Center)
                 .width(FillPortion(1)),
@@ -493,7 +499,10 @@ impl App {
                 column![
                     text("Rule ID").size(18),
                     space().height(SEPERATION),
-                    selectable_text(&stig_rule.rule_id),
+                    selectable_text(stig_rule.rule_id.clone()).highlight_str(
+                        self.filter_string.clone(),
+                        |theme| theme.extended_palette().primary.weak.color
+                    ),
                     space().height(SEPERATION),
                     rule::horizontal(2),
                     space().height(SEPERATION),
@@ -506,91 +515,68 @@ impl App {
                 column![
                     text("STIG ID").size(18),
                     space().height(SEPERATION),
-                    selectable_text(stig_rule.stig_id.as_deref().unwrap_or("None")),
+                    selectable_text(stig_rule.stig_id.clone().unwrap_or("None".into())).highlight_str(
+                        self.filter_string.clone(),
+                        |theme| theme.extended_palette().primary.weak.color
+                    ),
                     space().height(SEPERATION),
                     rule::horizontal(2),
                     space().height(SEPERATION),
                     text("Documentable").size(18),
                     space().height(SEPERATION),
-                    selectable_text(stig_rule.documentable_str()),
+                    selectable_text(stig_rule.documentable_str()).highlight_str(
+                        self.filter_string.clone(),
+                        |theme| theme.extended_palette().primary.weak.color
+                    ),
                 ]
                 .align_x(Center)
                 .width(FillPortion(1)),
             ],
             space().height(SEPERATION),
-            text(" Introduction").size(32),
-            rule::horizontal(2),
-            space().height(SEPERATION),
-            row![space().width(SEPERATION), selectable_text(&stig_rule.title)],
-            space().height(SEPERATION),
-            text(" Description").size(32),
-            rule::horizontal(2),
-            space().height(SEPERATION),
             row![
                 space().width(SEPERATION),
-                selectable_text(&stig_rule.vuln_discussion)
-            ],
-            space().height(SEPERATION),
-            text(" Check").size(32),
-            rule::horizontal(2),
-            space().height(SEPERATION),
-            row![
-                space().width(SEPERATION),
-                selectable_text(&stig_rule.check_text),
-            ],
-            space().height(SEPERATION),
-            text(" Fix").size(32),
-            rule::horizontal(2),
-            space().height(SEPERATION),
-            row![
-                space().width(SEPERATION),
-                selectable_text(&stig_rule.fix_text)
-            ],
-            space().height(SEPERATION),
-            text(" CCIs").size(32),
-            rule::horizontal(2),
-            space().height(SEPERATION),
-            row![
-                space().width(SEPERATION),
-                selectable_text(
-                    stig_rule
-                        .cci_refs
-                        .as_ref()
-                        .map(|refs| refs.join("\n"))
-                        .unwrap_or_default(),
+                Element::from(
+                    markdown::view_selectable(
+                        markdown::parse(&format!(
+                            "# Introduction\n{}\n# Description\n{}\n# Check\n{}\n# Fix\n{}\n# CCIs\n{}\n# False Positives\n{}\n# False Negatives\n{}",
+                            stig_rule.title.clone(),
+                            stig_rule.vuln_discussion.clone(),
+                            stig_rule.check_text.clone(),
+                            stig_rule.fix_text.clone(),
+                            stig_rule
+                                .cci_refs
+                                .clone()
+                                .map(|strings| strings.join("\n"))
+                                .unwrap_or_default(),
+                            stig_rule.false_positives.clone().unwrap_or("".into()),
+                            stig_rule.false_negatives.clone().unwrap_or("".into()),
+                        )),
+                        markdown::Settings::from(self.theme()),
+                    )
+                    .highlight_str(&self.filter_string, |theme| {
+                        theme.extended_palette().primary.weak.color
+                    })
                 )
-            ],
-            space().height(SEPERATION),
-            text(" False Positives").size(32),
-            rule::horizontal(2),
-            space().height(SEPERATION),
-            row![
-                space().width(SEPERATION),
-                selectable_text(stig_rule.false_positives.as_deref().unwrap_or(""))
-            ],
-            space().height(SEPERATION),
-            text(" False Negatives").size(32),
-            rule::horizontal(2),
-            space().height(SEPERATION),
-            row![
-                space().width(SEPERATION),
-                selectable_text(stig_rule.false_negatives.as_deref().unwrap_or(""))
+                .map(|_| Message::DoNothing)
             ],
         ];
 
-        // Wrap it in a scrollable.
-        let content = scrollable(content).spacing(SEPERATION);
+            // Wrap it in a scrollable.
+            let content = scrollable(content).spacing(SEPERATION);
 
-        let content = container(content)
-            .center(Fill)
-            .padding(8)
-            .style(background_container);
+            let content = container(content)
+                .center(Fill)
+                .padding(8)
+                .style(background_container);
+
+            content
+        });
 
         // Stack the content with a container that fades in and out.
         // This acts as animation, showing the user the STIG has changed when
         // a new STIG is selected.
         stack![
-            content,
+            lazy_widget,
             container(space())
                 .width(Fill)
                 .height(Fill)
@@ -822,6 +808,15 @@ impl App {
                             .style(toggler_theme),
                     ]
                     .align_y(Center),
+                    space().height(SEPERATION),
+                    row![
+                        text("Notify About Updates"),
+                        space::horizontal(),
+                        toggler(self.settings.notify_if_update)
+                            .on_toggle(Message::SaveUpdateNotify)
+                            .style(toggler_theme),
+                    ]
+                    .align_y(Center),
                 ]
                 .align_x(Center),
             )
@@ -887,14 +882,19 @@ impl App {
         container(
             row![
                 space().width(SEPERATION * 0.5),
-                button(svg(CROSS.clone()).style(boring_svg).width(13).height(13))
-                    .padding(1)
+                button(svg(CROSS.clone()).style(boring_svg).width(10).height(10))
+                    .padding(0)
                     .width(Shrink)
                     .height(Shrink)
                     .style(no_button)
                     .on_press(Message::SwitchDisplayUpdateAvailable(false)),
                 space().width(SEPERATION),
-                container(text("Update Available").size(12).center()),
+                button(text("Update Available").size(11).center())
+                    .style(no_button)
+                    .padding(0)
+                    .on_press(Message::OpenURL(
+                        "https://github.com/joshuardecker/stig-view/releases"
+                    )),
                 space().width(SEPERATION * 0.5),
             ]
             .align_y(Center),
