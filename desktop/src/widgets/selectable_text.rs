@@ -18,7 +18,8 @@ use iced::{
     widget::text::{LineHeight, Shaping, Wrapping},
 };
 use iced_graphics::text::Paragraph as ConcreteP;
-use unicode_segmentation::UnicodeSegmentation as _;
+
+use crate::widgets::text_utils;
 
 /// Text that can be highlighted, selected with a mouse, and copied to the clipboard.
 pub struct SelectableText<'a> {
@@ -98,49 +99,7 @@ impl<'a> SelectableText<'a> {
     }
 }
 
-/// Returns (x, width) per visual line within `buffer_line` for the selected byte range [from, to).
-/// Directly mirrors iced_graphics::text::editor::highlight_line.
-fn highlight_line(
-    buffer_line: &cosmic_text::BufferLine,
-    from: usize,
-    to: usize,
-) -> Vec<(f32, f32)> {
-    let layout = buffer_line
-        .layout_opt()
-        .map(|v| v.as_slice())
-        .unwrap_or(&[]);
 
-    layout
-        .iter()
-        .map(|visual_line| {
-            let line_start = visual_line.glyphs.first().map(|g| g.start).unwrap_or(0);
-            let line_end = visual_line.glyphs.last().map(|g| g.end).unwrap_or(0);
-
-            let range = line_start.max(from)..line_end.min(to);
-
-            if range.is_empty() {
-                (0.0, 0.0)
-            } else if range.start == line_start && range.end == line_end {
-                (0.0, visual_line.w)
-            } else {
-                let first_glyph = visual_line
-                    .glyphs
-                    .iter()
-                    .position(|g| range.start <= g.start)
-                    .unwrap_or(0);
-
-                let mut glyphs = visual_line.glyphs.iter();
-                let x: f32 = glyphs.by_ref().take(first_glyph).map(|g| g.w).sum();
-                let width: f32 = glyphs
-                    .take_while(|g| range.end > g.start)
-                    .map(|g| g.w)
-                    .sum();
-
-                (x, width)
-            }
-        })
-        .collect()
-}
 
 /// Returns the total number of visual lines in `buffer` before logical line `line_idx`.
 fn visual_lines_before(buffer: &cosmic_text::Buffer, line_idx: usize) -> usize {
@@ -150,38 +109,7 @@ fn visual_lines_before(buffer: &cosmic_text::Buffer, line_idx: usize) -> usize {
         .sum()
 }
 
-/// Like `buffer.hit(x, y)` but falls back to a y-based line lookup when `hit()` returns
-/// `None`. This handles blank lines, which have no glyphs and thus can't be hit directly.
-/// Returns `(logical_line_index, byte_offset)`.
-fn hit_or_nearest(buffer: &cosmic_text::Buffer, x: f32, y: f32) -> Option<(usize, usize)> {
-    if let Some(c) = buffer.hit(x, y) {
-        return Some((c.line, c.index));
-    }
 
-    if buffer.lines.is_empty() {
-        return None;
-    }
-
-    let line_height = buffer.metrics().line_height;
-    if line_height <= 0.0 {
-        return None;
-    }
-
-    let target_visual = (y / line_height).max(0.0) as usize;
-    let mut visual_start = 0usize;
-
-    for (i, line) in buffer.lines.iter().enumerate() {
-        // Blank lines may have 0 layout entries; treat them as occupying 1 visual line.
-        let visual_count = line.layout_opt().map(|v| v.len()).unwrap_or(1).max(1);
-        if target_visual < visual_start + visual_count || i + 1 == buffer.lines.len() {
-            return Some((i, line.text().len()));
-        }
-        visual_start += visual_count;
-    }
-
-    let last = buffer.lines.len() - 1;
-    Some((last, buffer.lines[last].text().len()))
-}
 
 /// Draws highlight quads for a byte range within a single buffer line. Returns the number of
 /// visual sub-lines consumed, so callers tracking a running visual offset can advance it.
@@ -198,7 +126,7 @@ fn draw_highlight_span<R>(
 where
     R: iced::advanced::text::Renderer<Paragraph = ConcreteP, Font = iced::Font>,
 {
-    let spans = highlight_line(buffer_line, from, to);
+    let spans = text_utils::highlight_line(buffer_line, from, to);
     let count = buffer_line
         .layout_opt()
         .map(|v| v.len())
@@ -311,12 +239,8 @@ where
         }
 
         if let Some(((anchor_line, anchor_idx), (focus_line, focus_idx))) = state.selection {
-            let (start_line, start_idx, end_line, end_idx) =
-                if (anchor_line, anchor_idx) <= (focus_line, focus_idx) {
-                    (anchor_line, anchor_idx, focus_line, focus_idx)
-                } else {
-                    (focus_line, focus_idx, anchor_line, anchor_idx)
-                };
+            let ((start_line, start_idx), (end_line, end_idx)) =
+                text_utils::normalize_selection(anchor_line, anchor_idx, focus_line, focus_idx);
 
             if (start_line, start_idx) < (end_line, end_idx) {
                 let buffer = state.paragraph.raw().buffer();
@@ -387,37 +311,15 @@ where
                     if let Some(mouse_pos) = cursor.position_in(layout.bounds()) {
                         let click = Click::new(mouse_pos, mouse::Button::Left, state.last_click);
 
-                        if let Some(c) =
-                            state.paragraph.raw().buffer().hit(mouse_pos.x, mouse_pos.y)
-                        {
-                            let buffer = state.paragraph.raw().buffer();
-                            let line_text = buffer.lines[c.line].text();
-
-                            state.selection = match click.kind() {
-                                click::Kind::Single => {
-                                    state.is_dragging = true;
-                                    Some(((c.line, c.index), (c.line, c.index)))
-                                }
-                                click::Kind::Double => {
-                                    let start = line_text
-                                        .unicode_word_indices()
-                                        .rev()
-                                        .map(|(i, _)| i)
-                                        .find(|&i| i < c.index)
-                                        .unwrap_or(0);
-
-                                    let end = line_text
-                                        .unicode_word_indices()
-                                        .map(|(i, word)| i + word.len())
-                                        .find(|&i| i > c.index)
-                                        .unwrap_or(line_text.len());
-
-                                    Some(((c.line, start), (c.line, end)))
-                                }
-                                click::Kind::Triple => {
-                                    Some(((c.line, 0), (c.line, line_text.len())))
-                                }
-                            };
+                        if let Some(sel) = text_utils::selection_from_click(
+                            state.paragraph.raw().buffer(),
+                            click,
+                            mouse_pos,
+                        ) {
+                            state.selection = Some(sel);
+                            if click.kind() == click::Kind::Single {
+                                state.is_dragging = true;
+                            }
                         } else {
                             state.selection = None;
                         }
@@ -435,14 +337,12 @@ where
                     {
                         if let Some(mouse_pos) = cursor.position_in(layout.bounds()) {
                             if let Some(((anchor_line, anchor_idx), _)) = state.selection {
-                                let focus = hit_or_nearest(
+                                if let Some(new_sel) = text_utils::selection_from_drag(
                                     state.paragraph.raw().buffer(),
-                                    mouse_pos.x,
-                                    mouse_pos.y,
-                                );
-
-                                if let Some(focus_pos) = focus {
-                                    state.selection = Some(((anchor_line, anchor_idx), focus_pos));
+                                    (anchor_line, anchor_idx),
+                                    mouse_pos,
+                                ) {
+                                    state.selection = Some(new_sel);
                                     shell.request_redraw();
                                 }
                             }
@@ -464,43 +364,14 @@ where
             }) if c.as_str() == "c" && modifiers.command() => {
                 if let Some(((anchor_line, anchor_idx), (focus_line, focus_idx))) = state.selection
                 {
-                    let (start_line, start_idx, end_line, end_idx) =
-                        if (anchor_line, anchor_idx) <= (focus_line, focus_idx) {
-                            (anchor_line, anchor_idx, focus_line, focus_idx)
-                        } else {
-                            (focus_line, focus_idx, anchor_line, anchor_idx)
-                        };
-
-                    if (start_line, start_idx) < (end_line, end_idx) {
-                        let buffer = state.paragraph.raw().buffer();
-                        let mut selected_text = String::new();
-                        let selected_logical_lines = end_line - start_line + 1;
-
-                        for (i, buffer_line) in buffer
-                            .lines
-                            .iter()
-                            .skip(start_line)
-                            .take(selected_logical_lines)
-                            .enumerate()
-                        {
-                            if i > 0 {
-                                selected_text.push('\n');
-                            }
-
-                            let text = buffer_line.text();
-                            let from = if i == 0 { start_idx } else { 0 };
-                            let to = if i == selected_logical_lines - 1 {
-                                end_idx
-                            } else {
-                                text.len()
-                            };
-
-                            selected_text.push_str(&text[from.min(text.len())..to.min(text.len())]);
-                        }
-
-                        if !selected_text.is_empty() {
-                            clipboard.write(ClipboardKind::Standard, selected_text);
-                        }
+                    if let Some(text) = text_utils::extract_selection_text(
+                        state.paragraph.raw().buffer(),
+                        anchor_line,
+                        anchor_idx,
+                        focus_line,
+                        focus_idx,
+                    ) {
+                        clipboard.write(ClipboardKind::Standard, text);
                     }
                 }
             }
