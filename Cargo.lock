@@ -1550,7 +1550,6 @@ dependencies = [
  "iced_core",
  "log",
  "rustc-hash 2.1.1",
- "tokio",
  "wasm-bindgen-futures",
  "wasmtimer",
 ]
@@ -2636,9 +2635,9 @@ checksum = "42f5e15c9953c5e4ccceeb2e7382a716482c34515315f7b03532b8b4e8393d2d"
 
 [[package]]
 name = "open"
-version = "5.3.4"
+version = "5.3.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9f3bab717c29a857abf75fcef718d441ec7cb2725f937343c734740a985d37fd"
+checksum = "2fbaa89d2ddc8473c78a3adf69eea8cffa28c483b8e02a971ef31527cd0fc92c"
 dependencies = [
  "is-wsl",
  "libc",
@@ -3719,7 +3718,7 @@ checksum = "a2eb9349b6444b326872e140eb1cf5e7c522154d69e7a0ffb0fb81c06b37543f"
 
 [[package]]
 name = "stig-view-core"
-version = "0.6.0"
+version = "0.6.1"
 dependencies = [
  "dirs",
  "regex",
@@ -3734,7 +3733,7 @@ dependencies = [
 
 [[package]]
 name = "stig-view-desktop"
-version = "0.6.0"
+version = "0.6.1"
 dependencies = [
  "cosmic-text",
  "dirs",
@@ -3945,15 +3944,6 @@ name = "tinyvec_macros"
 version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1f3ccbac311fea05f86f61904b462b55fb3df8837a366dfc601a0161d0532f20"
-
-[[package]]
-name = "tokio"
-version = "1.49.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "72a2903cd7736441aac9df9d7688bd0ce48edccaadf181c3b90be801e81d3d86"
-dependencies = [
- "pin-project-lite",
-]
 
 [[package]]
 name = "toml"
