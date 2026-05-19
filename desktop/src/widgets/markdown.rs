@@ -389,7 +389,7 @@ fn parse_with(markdown: &str) -> impl Iterator<Item = Item> + '_ {
         }
         pulldown_cmark::Event::SoftBreak if !metadata => {
             spans.push(Span::Standard {
-                text: String::from(" "),
+                text: String::from("\n"),
                 strikethrough,
                 strong,
                 emphasis,
