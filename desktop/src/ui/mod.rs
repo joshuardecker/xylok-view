@@ -67,6 +67,7 @@ impl App {
         use iced::window::Direction::{
             East, North, NorthEast, NorthWest, South, SouthEast, SouthWest, West,
         };
+        use iced::mouse::Interaction;
 
         // There are a few mouse areas here.
         // Without window decorations, we need to handle windoe drag and click resizing ourselves.
@@ -82,6 +83,7 @@ impl App {
                             .height(SEPERATION)
                     )
                     .on_press(Message::WindowDragResize(NorthWest))
+                    .interaction(Interaction::ResizingDiagonallyDown)
                 ),
                 container(
                     mouse_area(
@@ -90,6 +92,7 @@ impl App {
                             .height(SEPERATION)
                     )
                     .on_press(Message::WindowDragResize(North))
+                    .interaction(Interaction::ResizingVertically)
                 ),
                 container(
                     mouse_area(
@@ -98,6 +101,7 @@ impl App {
                             .height(SEPERATION)
                     )
                     .on_press(Message::WindowDragResize(NorthEast))
+                    .interaction(Interaction::ResizingDiagonallyUp)
                 ),
             ],
             window_decorations,
@@ -112,6 +116,7 @@ impl App {
                             .height(Fill)
                     )
                     .on_press(Message::WindowDragResize(West))
+                    .interaction(Interaction::ResizingHorizontally)
                 ),
                 content,
                 container(
@@ -121,6 +126,7 @@ impl App {
                             .height(Fill)
                     )
                     .on_press(Message::WindowDragResize(East))
+                    .interaction(Interaction::ResizingHorizontally)
                 ),
             ],
             // Bottom section below the main content.
@@ -132,6 +138,7 @@ impl App {
                             .height(SEPERATION * 2.0)
                     )
                     .on_press(Message::WindowDragResize(SouthWest))
+                    .interaction(Interaction::ResizingDiagonallyUp)
                 ),
                 container(
                     mouse_area(
@@ -140,6 +147,7 @@ impl App {
                             .height(SEPERATION * 2.0)
                     )
                     .on_press(Message::WindowDragResize(South))
+                    .interaction(Interaction::ResizingVertically)
                 ),
                 container(
                     mouse_area(
@@ -148,6 +156,7 @@ impl App {
                             .height(SEPERATION * 2.0)
                     )
                     .on_press(Message::WindowDragResize(SouthEast))
+                    .interaction(Interaction::ResizingDiagonallyDown)
                 ),
             ],
         ])
@@ -1000,7 +1009,7 @@ impl App {
                             .delay(iced::time::Duration::from_millis(600)),
                             space().width(8),
                             tooltip(
-                                button(text("File").center().size(15))
+                                button(text("Open").center().size(15))
                                     .padding(4)
                                     .width(Shrink)
                                     .height(Shrink)
@@ -1014,13 +1023,13 @@ impl App {
                             .delay(iced::time::Duration::from_millis(600)),
                             space().width(4),
                             tooltip(
-                                button(text("Filter").center().size(15))
+                                button(text("Find").center().size(15))
                                     .padding(4)
                                     .width(Shrink)
                                     .height(Shrink)
                                     .style(rounded_dark_button)
                                     .on_press(Message::SwitchPopup(Popup::Filter)),
-                                container("Sort Content Based on Keywords (Ctrl + F)")
+                                container("Find Content Based on Keywords (Ctrl + F)")
                                     .style(background_container)
                                     .padding(4),
                                 tooltip::Position::Right
