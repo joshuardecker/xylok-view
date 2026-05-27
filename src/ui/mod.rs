@@ -586,13 +586,15 @@ impl App {
         // Stack the content with a container that fades in and out.
         // This acts as animation, showing the user the STIG has changed when
         // a new STIG is selected.
-        stack![
+        container(stack![
             lazy_widget,
             container(space())
                 .width(Fill)
                 .height(Fill)
                 .style(fade_overlay(1.0 - self.main_col_opacity))
-        ]
+        ])
+        .width(Fill)
+        .height(Fill)
         .into()
     }
 
