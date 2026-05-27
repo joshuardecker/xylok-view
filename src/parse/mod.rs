@@ -1,21 +1,20 @@
 /// Load ckl and cklb files into a benchmark.
-mod ckl;
+pub mod ckl;
 /// Detect the format of a benchmark file, such as xccdf, ckl, cklb, or xylok.
-mod detection;
+pub mod detection;
 /// Load xccdf files into a benchmark.
-mod xccdf;
+pub mod xccdf;
 /// Load xylok toml files into a benchmark.
-mod xylok;
-
-// Re exports.
-pub use crate::ckl::*;
-pub use crate::detection::*;
-pub use crate::xccdf::*;
-pub use crate::xylok::*;
+pub mod xylok;
 
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 use std::path::Path;
+
+use crate::parse::{
+    ckl::{CKLB, CKLStatus},
+    xylok::XylokToml,
+};
 
 /// If file format ever changes, this number will to.
 /// It will make deserialization of old format fail.

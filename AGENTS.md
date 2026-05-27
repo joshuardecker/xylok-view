@@ -8,29 +8,6 @@ Stig View is a Rust desktop application for viewing DISA Security Technical Impl
 
 The goal when using AI to develop this application is **not** for AI to do it alone. Instead AI is used as a tool to improve existing code, and discuss future ideas and how to best implement them.
 
-## Commands
-
-```bash
-# Build (release)
-cargo build --release -p stig-view-desktop
-
-# Run (development)
-cargo run -p stig-view-desktop
-
-# Tests (core library only — no desktop tests)
-cargo test -p stig-view-core
-
-# Build all crates
-cargo build
-```
-
-## Architecture
-
-Cargo workspace with two crates:
-
-- **`core/`** (`stig-view-core`) — GUI-agnostic business logic, kept separate for potential future reuse (e.g. a web frontend).
-- **`desktop/`** (`stig-view-desktop`) — Iced desktop application.
-
 ## Agent Guidelines
 
 - **Make minimal changes.** Prefer small, focused diffs.
@@ -50,8 +27,8 @@ Cargo workspace with two crates:
 
 ## Useful Context
 
-- `core/src/lib.rs` defines the canonical `Benchmark` and `Rule` types.
-- `core/src/detection.rs` handles file format sniffing.
-- `desktop/src/app/app.rs` contains the Iced update loop and message handling.
-- `desktop/src/ui/mod.rs` contains the Iced view code.
-- `desktop/src/app/command.rs` implements regex-based rule filtering.
+- `src/parse/mod.rs` defines the canonical `Benchmark` and `Rule` types.
+- `src/parse/detection.rs` handles file format sniffing.
+- `src/app/app.rs` contains the Iced update loop and message handling.
+- `src/ui/mod.rs` contains the Iced view code.
+- `src/app/search.rs` implements regex-based rule filtering.

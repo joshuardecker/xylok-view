@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 
-use crate::{Benchmark, CACHE_VERSION, Rule, Severity};
+use crate::parse::{Benchmark, CACHE_VERSION, Rule, Severity};
 
 /// A struct representing a JSON CKLB.
 #[derive(Debug, Clone, Deserialize, PartialEq, Eq)]

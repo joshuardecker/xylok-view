@@ -19,7 +19,7 @@
       InstallScope='perMachine'
       Platform='x64' />
 
-    <Icon Id='AppIcon' SourceFile='$(sys.SOURCEFILEDIR)..\..\assets\logo\logo.ico' />
+    <Icon Id='AppIcon' SourceFile='$(sys.SOURCEFILEDIR)..\assets\logo\logo.ico' />
 
     <MajorUpgrade
       Schedule='afterInstallInitialize'

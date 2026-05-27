@@ -3,8 +3,7 @@ use std::io::Read;
 use std::path::Path;
 use zip::ZipArchive;
 
-use crate::CKLB;
-use crate::{Format, XylokToml};
+use crate::parse::{Format, ckl::CKLB, xylok::XylokToml};
 
 /// Detect the format of STIG the user provided given a path.
 /// If its not a STIG, that is still returned as an error.
@@ -101,19 +100,19 @@ fn detect_xccdf_in_zip(path: &Path) -> Option<Format> {
 
 #[test]
 fn test_xccdfv1_1_detection() {
-    let format = detect_stig_format("../test_assets/U_RHEL_8_V2R6_STIG.zip");
+    let format = detect_stig_format("test_assets/U_RHEL_8_V2R6_STIG.zip");
     assert!(matches!(format, Some(Format::XccdfV1_1(_))));
 }
 
 #[test]
 fn test_xccdfv1_2_detection() {
     let format =
-        detect_stig_format("../test_assets/U_MS_Windows_10_V3R7_STIG_SCAP_1-3_Benchmark.zip");
+        detect_stig_format("test_assets/U_MS_Windows_10_V3R7_STIG_SCAP_1-3_Benchmark.zip");
     assert!(matches!(format, Some(Format::XccdfV1_2)));
 }
 
 #[test]
 fn test_xylok_detection() {
-    let format = detect_stig_format("../test_assets/packed.toml");
+    let format = detect_stig_format("test_assets/packed.toml");
     assert!(matches!(format, Some(Format::Xylok(_))));
 }

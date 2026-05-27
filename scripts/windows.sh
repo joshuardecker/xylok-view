@@ -28,13 +28,13 @@ echo "==> VC Redist merge module: $VCToolsRedistMSM"
 # No --target flag: windows-latest is x86_64-pc-windows-msvc natively,
 # so the binary lands in target/release/ where cargo-wix expects it.
 echo "==> Building stig-view (release)..."
-cargo build --release -p stig-view-desktop
+cargo build --release
 
 # ---------------------------------------------------------------------------
 # Package (MSI)
 # ---------------------------------------------------------------------------
 echo "==> Building MSI installer..."
-cargo wix --no-build --nocapture -p stig-view-desktop
+cargo wix --no-build --nocapture
 
 MSI=$(find target/wix -name "*.msi" | head -1)
 echo "==> Done: $MSI"

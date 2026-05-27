@@ -3,6 +3,8 @@
 
 /// Contains all of the app logic, which is the apps state and functionality.
 mod app;
+/// Contains all logic for parsing files into interpretable logic.
+mod parse;
 /// Contains all of the ui code, such as styles and ui elements.
 /// Contains some logic, but only ui logic.
 mod ui;
@@ -19,7 +21,7 @@ fn main() -> iced::Result {
         .subscription(App::subscription)
         .theme(App::theme)
         .title("Stig View")
-        .font(include_bytes!("../../assets/fonts/font.ttf"))
+        .font(include_bytes!("../assets/fonts/font.ttf"))
         .default_font(Font::with_name("CMU Sans Serif"))
         .run()
 }
@@ -35,7 +37,7 @@ fn main() -> iced::Result {
         .subscription(App::subscription)
         .theme(App::theme)
         .title("Stig View")
-        .font(include_bytes!("../../assets/fonts/font.ttf"))
+        .font(include_bytes!("../assets/fonts/font.ttf"))
         .default_font(Font::with_name("CMU Sans Serif"))
         .window(Settings {
             platform_specific: PlatformSpecific {

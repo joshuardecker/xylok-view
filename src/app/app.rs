@@ -2,10 +2,12 @@ use iced::{Subscription, Theme, keyboard, keyboard::key, window::icon::from_file
 use image::ImageFormat;
 use rfd::AsyncFileDialog;
 use std::time::Instant;
-use stig_view_core::{Benchmark, Format, detect_stig_format, load_ckl, load_v1_1};
 
 use crate::app::search::*;
 use crate::app::*;
+use crate::parse::{
+    Benchmark, Format, ckl::load_ckl, detection::detect_stig_format, xccdf::load_v1_1,
+};
 use crate::ui::{APP_ICON, THEME_COFFEE, THEME_DARK, THEME_HIGH_CONTRAST, THEME_LIGHT};
 
 const MAIN_FADE_START: f32 = 0.0;

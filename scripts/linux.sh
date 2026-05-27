@@ -7,7 +7,7 @@ PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 cd "$PROJECT_ROOT"
 
 echo "==> Building stig-view..."
-cargo build --release -p stig-view-desktop
+cargo build --release
 
 # ---------------------------------------------------------------------------
 # Flatpak

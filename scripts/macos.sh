@@ -6,7 +6,7 @@ PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 cd "$PROJECT_ROOT"
 
-VERSION=$(grep '^version' desktop/Cargo.toml | head -1 | sed 's/.*"\(.*\)".*/\1/')
+VERSION=$(grep '^version' Cargo.toml | head -1 | sed 's/.*"\(.*\)".*/\1/')
 APP_NAME="Stig View"
 APP_BUNDLE="StigView.app"
 DMG="$PROJECT_ROOT/stig-view.dmg"
@@ -16,7 +16,7 @@ STAGING="$PROJECT_ROOT/dmg-staging"
 # Build
 # ---------------------------------------------------------------------------
 echo "==> Building stig-view $VERSION..."
-cargo build --release -p stig-view-desktop
+cargo build --release
 
 # ---------------------------------------------------------------------------
 # Assemble .app bundle

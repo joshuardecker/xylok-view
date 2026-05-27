@@ -3717,23 +3717,8 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a2eb9349b6444b326872e140eb1cf5e7c522154d69e7a0ffb0fb81c06b37543f"
 
 [[package]]
-name = "stig-view-core"
-version = "0.6.1"
-dependencies = [
- "dirs",
- "regex",
- "rmp-serde",
- "roxmltree 0.21.1",
- "serde",
- "serde_json",
- "toml",
- "zip",
- "zstd",
-]
-
-[[package]]
-name = "stig-view-desktop"
-version = "0.6.1"
+name = "stig-view"
+version = "0.6.2"
 dependencies = [
  "cosmic-text",
  "dirs",
@@ -3744,13 +3729,16 @@ dependencies = [
  "pulldown-cmark",
  "regex",
  "rfd",
+ "rmp-serde",
+ "roxmltree 0.21.1",
  "serde",
  "serde_json",
- "stig-view-core",
  "toml",
  "unicode-segmentation",
  "ureq",
  "winresource",
+ "zip",
+ "zstd",
 ]
 
 [[package]]

@@ -1,8 +1,8 @@
 use regex::Regex;
 use std::collections::HashMap;
-use stig_view_core::Benchmark;
 
 use crate::app::Pinned;
+use crate::parse::Benchmark;
 
 /// A command sent by the user can be two things:
 /// - Look for a key phrase using regex.
