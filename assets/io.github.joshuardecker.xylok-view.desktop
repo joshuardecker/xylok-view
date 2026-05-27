@@ -1,7 +1,7 @@
 [Desktop Entry]
-Name=Stig View
-Exec=stig-view
-Icon=io.github.joshuardecker.stig-view
+Name=Xylok View
+Exec=xylok-view
+Icon=io.github.joshuardecker.xylok-view
 Type=Application
 Terminal=false
 Categories=Utility;Development;Security;

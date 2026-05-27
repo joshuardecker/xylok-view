@@ -6,7 +6,7 @@ PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 cd "$PROJECT_ROOT"
 
-echo "==> Building stig-view..."
+echo "==> Building xylok-view..."
 cargo build --release
 
 # ---------------------------------------------------------------------------
@@ -15,7 +15,7 @@ cargo build --release
 if command -v flatpak-builder &>/dev/null; then
     REPO_DIR="$PROJECT_ROOT/flatpak-repo"
     BUILD_DIR="$PROJECT_ROOT/flatpak-build"
-    BUNDLE="$PROJECT_ROOT/stig-view.flatpak"
+    BUNDLE="$PROJECT_ROOT/xylok-view.flatpak"
 
     echo "==> Assembling Flatpak..."
     flatpak-builder \
@@ -25,7 +25,7 @@ if command -v flatpak-builder &>/dev/null; then
         --force-clean
 
     echo "==> Bundling Flatpak..."
-    flatpak build-bundle "$REPO_DIR" "$BUNDLE" io.github.joshuardecker.stig-view
+    flatpak build-bundle "$REPO_DIR" "$BUNDLE" io.github.joshuardecker.xylok-view
 
     echo "==> Done: $BUNDLE"
 fi
@@ -38,21 +38,21 @@ fi
 # ---------------------------------------------------------------------------
 if command -v appimagetool &>/dev/null; then
     APPDIR="$PROJECT_ROOT/AppDir"
-    APPIMAGE="$PROJECT_ROOT/stig-view.AppImage"
+    APPIMAGE="$PROJECT_ROOT/xylok-view.AppImage"
 
     echo "==> Assembling AppDir..."
     rm -rf "$APPDIR"
     mkdir -p "$APPDIR/usr/bin"
 
-    cp target/release/stig-view "$APPDIR/usr/bin/stig-view"
-    cp assets/io.github.joshuardecker.stig-view.desktop "$APPDIR/io.github.joshuardecker.stig-view.desktop"
-    cp assets/logo/logo-512.png "$APPDIR/io.github.joshuardecker.stig-view.png"
+    cp target/release/xylok-view "$APPDIR/usr/bin/xylok-view"
+    cp assets/io.github.joshuardecker.xylok-view.desktop "$APPDIR/io.github.joshuardecker.xylok-view.desktop"
+    cp assets/logo/logo-512.png "$APPDIR/io.github.joshuardecker.xylok-view.png"
 
     cat > "$APPDIR/AppRun" << 'APPRUN'
 #!/bin/bash
 SELF=$(readlink -f "$0")
 HERE="${SELF%/*}"
-exec "$HERE/usr/bin/stig-view" "$@"
+exec "$HERE/usr/bin/xylok-view" "$@"
 APPRUN
     chmod +x "$APPDIR/AppRun"
 

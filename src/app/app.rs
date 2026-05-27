@@ -18,6 +18,8 @@ const POPUP_FADE_DURATION_SECS: f32 = 0.15;
 
 impl App {
     pub fn new() -> (Self, Task<Message>) {
+        crate::app::migrate::run();
+
         let settings = AppSettings::load().unwrap_or(AppSettings::default());
         let last_opened = TimeLastOpened::load().unwrap_or(TimeLastOpened::new());
 
@@ -156,7 +158,7 @@ impl App {
                 let file_handle = AsyncFileDialog::new()
                     .add_filter("STIG", &["toml", "xml", "zip", "ckl", "cklb"])
                     .set_directory(home_dir)
-                    .set_title("Stig View - Select File")
+                    .set_title("Xylok View - Select File")
                     .pick_file()
                     .await;
 
@@ -641,7 +643,7 @@ impl App {
             return Vec::new();
         };
 
-        cache_dir.push("stig-view/");
+        cache_dir.push("xylok-view/");
 
         let entries = match std::fs::read_dir(&cache_dir) {
             Ok(entries) => entries,

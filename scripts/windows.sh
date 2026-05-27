@@ -27,7 +27,7 @@ echo "==> VC Redist merge module: $VCToolsRedistMSM"
 # ---------------------------------------------------------------------------
 # No --target flag: windows-latest is x86_64-pc-windows-msvc natively,
 # so the binary lands in target/release/ where cargo-wix expects it.
-echo "==> Building stig-view (release)..."
+echo "==> Building xylok-view (release)..."
 cargo build --release
 
 # ---------------------------------------------------------------------------

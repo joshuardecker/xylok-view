@@ -2,6 +2,8 @@
 mod app;
 /// Detect whether the user is running the latest release.
 mod latest_release;
+/// One-time migration from legacy "stig-view" paths.
+mod migrate;
 /// Contains search logic.
 mod search;
 /// Contains settings logic, like saving to the disk.

@@ -18,7 +18,7 @@ pub fn is_latest_version() -> Option<bool> {
     let agent: Agent = config.into();
 
     let body: String = agent
-        .get("https://api.github.com/repos/joshuardecker/stig-view/releases/latest")
+        .get("https://api.github.com/repos/joshuardecker/xylok-view/releases/latest")
         .call()
         .ok()?
         .body_mut()

@@ -1,8 +1,8 @@
-app-id: io.github.joshuardecker.stig-view
+app-id: io.github.joshuardecker.xylok-view
 runtime: org.freedesktop.Platform
 runtime-version: "25.08"
 sdk: org.freedesktop.Sdk
-command: stig-view
+command: xylok-view
 finish-args:
   - --socket=wayland
   - --socket=fallback-x11
@@ -11,23 +11,23 @@ finish-args:
   - --share=network
   - --filesystem=host
 modules:
-  - name: stig-view-module
+  - name: xylok-view-module
     buildsystem: simple
     build-commands:
-      - install -Dm755 stig-view /app/bin/stig-view
-      - install -Dm644 io.github.joshuardecker.stig-view.desktop /app/share/applications/io.github.joshuardecker.stig-view.desktop
-      - install -Dm644 logo-16.png /app/share/icons/hicolor/16x16/apps/io.github.joshuardecker.stig-view.png
-      - install -Dm644 logo-32.png /app/share/icons/hicolor/32x32/apps/io.github.joshuardecker.stig-view.png
-      - install -Dm644 logo-48.png /app/share/icons/hicolor/48x48/apps/io.github.joshuardecker.stig-view.png
-      - install -Dm644 logo-64.png /app/share/icons/hicolor/64x64/apps/io.github.joshuardecker.stig-view.png
-      - install -Dm644 logo-128.png /app/share/icons/hicolor/128x128/apps/io.github.joshuardecker.stig-view.png
-      - install -Dm644 logo-256.png /app/share/icons/hicolor/256x256/apps/io.github.joshuardecker.stig-view.png
-      - install -Dm644 logo-512.png /app/share/icons/hicolor/512x512/apps/io.github.joshuardecker.stig-view.png
+      - install -Dm755 xylok-view /app/bin/xylok-view
+      - install -Dm644 io.github.joshuardecker.xylok-view.desktop /app/share/applications/io.github.joshuardecker.xylok-view.desktop
+      - install -Dm644 logo-16.png /app/share/icons/hicolor/16x16/apps/io.github.joshuardecker.xylok-view.png
+      - install -Dm644 logo-32.png /app/share/icons/hicolor/32x32/apps/io.github.joshuardecker.xylok-view.png
+      - install -Dm644 logo-48.png /app/share/icons/hicolor/48x48/apps/io.github.joshuardecker.xylok-view.png
+      - install -Dm644 logo-64.png /app/share/icons/hicolor/64x64/apps/io.github.joshuardecker.xylok-view.png
+      - install -Dm644 logo-128.png /app/share/icons/hicolor/128x128/apps/io.github.joshuardecker.xylok-view.png
+      - install -Dm644 logo-256.png /app/share/icons/hicolor/256x256/apps/io.github.joshuardecker.xylok-view.png
+      - install -Dm644 logo-512.png /app/share/icons/hicolor/512x512/apps/io.github.joshuardecker.xylok-view.png
     sources:
       - type: file
-        path: target/release/stig-view
+        path: target/release/xylok-view
       - type: file
-        path: assets/io.github.joshuardecker.stig-view.desktop
+        path: assets/io.github.joshuardecker.xylok-view.desktop
       - type: file
         path: assets/logo/logo-16.png
       - type: file

@@ -2,8 +2,8 @@
 <Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>
   <Product
     Id='*'
-    Name='Stig View'
-    UpgradeCode='1D585B9B-17D8-45C0-9586-A14AFE62E32C'
+    Name='Xylok View'
+    UpgradeCode='b831b5bc-13ce-41be-8ba4-8511e8f37002'
     Manufacturer='Joshua Decker'
     Language='1033'
     Codepage='1252'
@@ -23,18 +23,18 @@
 
     <MajorUpgrade
       Schedule='afterInstallInitialize'
-      DowngradeErrorMessage='A newer version of Stig View is already installed.' />
+      DowngradeErrorMessage='A newer version of Xylok View is already installed.' />
 
     <Media Id='1' Cabinet='media1.cab' EmbedCab='yes' />
 
     <Directory Id='TARGETDIR' Name='SourceDir'>
       <Directory Id='ProgramFiles64Folder'>
-        <Directory Id='APPLICATIONROOTDIRECTORY' Name='Stig View'>
+        <Directory Id='APPLICATIONROOTDIRECTORY' Name='Xylok View'>
           <Component Id='MainExecutable' Guid='*'>
-            <File Id='StigViewEXE'
-              Name='stig-view.exe'
+            <File Id='XylokViewEXE'
+              Name='xylok-view.exe'
               DiskId='1'
-              Source='$(var.CargoTargetDir)\$(var.Profile)\stig-view.exe'
+              Source='$(var.CargoTargetDir)\$(var.Profile)\xylok-view.exe'
               KeyPath='yes' />
           </Component>
         </Directory>
@@ -42,14 +42,14 @@
       <Directory Id='ProgramMenuFolder'>
         <Component Id='StartMenuShortcut' Guid='*'>
           <Shortcut Id='StartMenuShortcutEntry'
-            Name='Stig View'
+            Name='Xylok View'
             Description='DISA STIG viewer'
-            Target='[APPLICATIONROOTDIRECTORY]stig-view.exe'
+            Target='[APPLICATIONROOTDIRECTORY]xylok-view.exe'
             WorkingDirectory='APPLICATIONROOTDIRECTORY'
             Icon='AppIcon' />
           <RemoveFolder Id='CleanUpStartMenuFolder' On='uninstall' />
           <RegistryValue Root='HKCU'
-            Key='Software\Joshua Decker\Stig View'
+            Key='Software\Joshua Decker\Xylok View'
             Name='installed'
             Type='integer'
             Value='1'

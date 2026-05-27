@@ -1,10 +1,10 @@
 [package]
-name = "stig-view"
+name = "xylok-view"
 version = "0.6.2"
 edition = "2024"
 
 [[bin]]
-name = "stig-view"
+name = "xylok-view"
 path = "src/main.rs"
 
 [dependencies]

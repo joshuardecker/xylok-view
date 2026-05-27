@@ -4,7 +4,7 @@ This file provides guidance to AI coding agents when working with code in this r
 
 ## Project Overview
 
-Stig View is a Rust desktop application for viewing DISA Security Technical Implementation Guides (STIGs). It supports Xylok packed TOML, XCCDF v1.1, CKL, and CKLB formats.
+Xylok View is a Rust desktop application for viewing DISA Security Technical Implementation Guides (STIGs). It supports Xylok packed TOML, XCCDF v1.1, CKL, and CKLB formats.
 
 The goal when using AI to develop this application is **not** for AI to do it alone. Instead AI is used as a tool to improve existing code, and discuss future ideas and how to best implement them.
 

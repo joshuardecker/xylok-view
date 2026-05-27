@@ -161,7 +161,7 @@ impl Benchmark {
         let mut cache_dir = dirs::cache_dir()?;
 
         // Create the save directory if it does not exist.
-        cache_dir.push("stig-view/");
+        cache_dir.push("xylok-view/");
         create_dir_all(&cache_dir).ok()?;
 
         // Add proper file extensions.

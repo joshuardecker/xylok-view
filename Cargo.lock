@@ -3717,31 +3717,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a2eb9349b6444b326872e140eb1cf5e7c522154d69e7a0ffb0fb81c06b37543f"
 
 [[package]]
-name = "stig-view"
-version = "0.6.2"
-dependencies = [
- "cosmic-text",
- "dirs",
- "iced",
- "iced_graphics",
- "image",
- "open",
- "pulldown-cmark",
- "regex",
- "rfd",
- "rmp-serde",
- "roxmltree 0.21.1",
- "serde",
- "serde_json",
- "toml",
- "unicode-segmentation",
- "ureq",
- "winresource",
- "zip",
- "zstd",
-]
-
-[[package]]
 name = "strict-num"
 version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5152,6 +5127,31 @@ name = "xmlwriter"
 version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ec7a2a501ed189703dba8b08142f057e887dfc4b2cc4db2d343ac6376ba3e0b9"
+
+[[package]]
+name = "xylok-view"
+version = "0.6.2"
+dependencies = [
+ "cosmic-text",
+ "dirs",
+ "iced",
+ "iced_graphics",
+ "image",
+ "open",
+ "pulldown-cmark",
+ "regex",
+ "rfd",
+ "rmp-serde",
+ "roxmltree 0.21.1",
+ "serde",
+ "serde_json",
+ "toml",
+ "unicode-segmentation",
+ "ureq",
+ "winresource",
+ "zip",
+ "zstd",
+]
 
 [[package]]
 name = "y4m"

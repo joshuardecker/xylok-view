@@ -21,8 +21,8 @@ jobs:
       - name: Upload
         uses: actions/upload-artifact@v4
         with:
-          name: stig-view-flatpak
-          path: stig-view.flatpak
+          name: xylok-view-flatpak
+          path: xylok-view.flatpak
 
   build-linux-appimage:
     runs-on: ubuntu-latest
@@ -63,5 +63,5 @@ jobs:
       - name: Upload
         uses: actions/upload-artifact@v4
         with:
-          name: stig-view-appimage
-          path: stig-view.AppImage
+          name: xylok-view-appimage
+          path: xylok-view.AppImage

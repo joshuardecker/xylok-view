@@ -906,7 +906,7 @@ impl App {
                     .style(no_button)
                     .padding(0)
                     .on_press(Message::OpenURL(
-                        "https://github.com/joshuardecker/stig-view/releases"
+                        "https://github.com/joshuardecker/xylok-view/releases"
                     )),
                 space().width(SEPERATION * 0.5),
             ]
