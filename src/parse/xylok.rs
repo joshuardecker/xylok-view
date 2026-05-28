@@ -1,7 +1,7 @@
 use serde::Deserialize;
 use std::collections::{BTreeMap, HashSet};
 
-use crate::{Benchmark, CACHE_VERSION, Rule, Severity};
+use crate::parse::{Benchmark, CACHE_VERSION, Rule, Severity};
 
 /// Xylok toml's can be deserialized into this struct.
 #[derive(Debug, Clone, Deserialize)]

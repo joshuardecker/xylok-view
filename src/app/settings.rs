@@ -34,7 +34,7 @@ impl AppSettings {
             "Couldn't locate config directory.",
         ))?;
 
-        save_dir.push("stig-view-settings.toml");
+        save_dir.push("xylok-view-settings.toml");
 
         let settings_str = toml::to_string(self)
             .map_err(|_| AppSettingsErr::CantSave("Couldn't save user settings."))?;
@@ -59,7 +59,7 @@ impl AppSettings {
 
         let mut save_dir = dirs::config_local_dir()?;
 
-        save_dir.push("stig-view-settings.toml");
+        save_dir.push("xylok-view-settings.toml");
 
         let settings_str = read_to_string(save_dir).ok()?;
 

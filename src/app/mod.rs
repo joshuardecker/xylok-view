@@ -2,6 +2,8 @@
 mod app;
 /// Detect whether the user is running the latest release.
 mod latest_release;
+/// One-time migration from legacy "stig-view" paths.
+mod migrate;
 /// Contains search logic.
 mod search;
 /// Contains settings logic, like saving to the disk.
@@ -12,12 +14,12 @@ mod time_opened;
 use iced::{Task, keyboard, widget::Id, window, window::Direction};
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, time::Instant};
-use stig_view_core::{Benchmark, Rule};
 
 use crate::app::{
     settings::{AppSettings, AppSettingsErr},
     time_opened::TimeLastOpened,
 };
+use crate::parse::{Benchmark, Rule};
 
 /// The overarching state of the application.
 #[derive(Debug, Clone)]

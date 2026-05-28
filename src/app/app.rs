@@ -2,10 +2,12 @@ use iced::{Subscription, Theme, keyboard, keyboard::key, window::icon::from_file
 use image::ImageFormat;
 use rfd::AsyncFileDialog;
 use std::time::Instant;
-use stig_view_core::{Benchmark, Format, detect_stig_format, load_ckl, load_v1_1};
 
 use crate::app::search::*;
 use crate::app::*;
+use crate::parse::{
+    Benchmark, Format, ckl::load_ckl, detection::detect_stig_format, xccdf::load_v1_1,
+};
 use crate::ui::{APP_ICON, THEME_COFFEE, THEME_DARK, THEME_HIGH_CONTRAST, THEME_LIGHT};
 
 const MAIN_FADE_START: f32 = 0.0;
@@ -16,6 +18,8 @@ const POPUP_FADE_DURATION_SECS: f32 = 0.15;
 
 impl App {
     pub fn new() -> (Self, Task<Message>) {
+        crate::app::migrate::run();
+
         let settings = AppSettings::load().unwrap_or(AppSettings::default());
         let last_opened = TimeLastOpened::load().unwrap_or(TimeLastOpened::new());
 
@@ -154,7 +158,7 @@ impl App {
                 let file_handle = AsyncFileDialog::new()
                     .add_filter("STIG", &["toml", "xml", "zip", "ckl", "cklb"])
                     .set_directory(home_dir)
-                    .set_title("Stig View - Select File")
+                    .set_title("Xylok View - Select File")
                     .pick_file()
                     .await;
 
@@ -639,7 +643,7 @@ impl App {
             return Vec::new();
         };
 
-        cache_dir.push("stig-view/");
+        cache_dir.push("xylok-view/");
 
         let entries = match std::fs::read_dir(&cache_dir) {
             Ok(entries) => entries,

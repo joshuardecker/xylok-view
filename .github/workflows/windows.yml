@@ -48,5 +48,5 @@ jobs:
       - name: Upload
         uses: actions/upload-artifact@v4
         with:
-          name: stig-view-windows
+          name: xylok-view-windows
           path: target/wix/*.msi

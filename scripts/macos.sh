@@ -6,17 +6,17 @@ PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 cd "$PROJECT_ROOT"
 
-VERSION=$(grep '^version' desktop/Cargo.toml | head -1 | sed 's/.*"\(.*\)".*/\1/')
-APP_NAME="Stig View"
-APP_BUNDLE="StigView.app"
-DMG="$PROJECT_ROOT/stig-view.dmg"
+VERSION=$(grep '^version' Cargo.toml | head -1 | sed 's/.*"\(.*\)".*/\1/')
+APP_NAME="Xylok View"
+APP_BUNDLE="XylokView.app"
+DMG="$PROJECT_ROOT/xylok-view.dmg"
 STAGING="$PROJECT_ROOT/dmg-staging"
 
 # ---------------------------------------------------------------------------
 # Build
 # ---------------------------------------------------------------------------
-echo "==> Building stig-view $VERSION..."
-cargo build --release -p stig-view-desktop
+echo "==> Building xylok-view $VERSION..."
+cargo build --release
 
 # ---------------------------------------------------------------------------
 # Assemble .app bundle
@@ -26,10 +26,10 @@ rm -rf "$APP_BUNDLE"
 mkdir -p "$APP_BUNDLE/Contents/MacOS"
 mkdir -p "$APP_BUNDLE/Contents/Resources"
 
-cp target/release/stig-view "$APP_BUNDLE/Contents/MacOS/stig-view"
+cp target/release/xylok-view "$APP_BUNDLE/Contents/MacOS/xylok-view"
 
 # Generate .icns from individual PNG sizes
-ICONSET="$PROJECT_ROOT/StigView.iconset"
+ICONSET="$PROJECT_ROOT/XylokView.iconset"
 mkdir -p "$ICONSET"
 
 # Map individual logo PNGs into the iconset at exact sizes
@@ -45,7 +45,7 @@ cp assets/logo/logo-512.png     "$ICONSET/icon_256x256@2x.png"
 cp assets/logo/logo-512.png     "$ICONSET/icon_512x512.png"
 cp assets/logo/logo-1024.png    "$ICONSET/icon_512x512@2x.png"
 
-iconutil -c icns "$ICONSET" -o "$APP_BUNDLE/Contents/Resources/stig-view.icns"
+iconutil -c icns "$ICONSET" -o "$APP_BUNDLE/Contents/Resources/xylok-view.icns"
 rm -rf "$ICONSET"
 
 cat > "$APP_BUNDLE/Contents/Info.plist" << EOF
@@ -55,13 +55,13 @@ cat > "$APP_BUNDLE/Contents/Info.plist" << EOF
 <plist version="1.0">
 <dict>
     <key>CFBundleExecutable</key>
-    <string>stig-view</string>
+    <string>xylok-view</string>
     <key>CFBundleIdentifier</key>
-    <string>io.github.joshuardecker.stig-view</string>
+    <string>io.github.joshuardecker.xylok-view</string>
     <key>CFBundleName</key>
-    <string>Stig View</string>
+    <string>Xylok View</string>
     <key>CFBundleDisplayName</key>
-    <string>Stig View</string>
+    <string>Xylok View</string>
     <key>CFBundleVersion</key>
     <string>$VERSION</string>
     <key>CFBundleShortVersionString</key>
@@ -69,7 +69,7 @@ cat > "$APP_BUNDLE/Contents/Info.plist" << EOF
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleIconFile</key>
-    <string>stig-view</string>
+    <string>xylok-view</string>
     <key>NSHighResolutionCapable</key>
     <true/>
 </dict>

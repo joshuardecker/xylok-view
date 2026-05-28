@@ -1,4 +1,4 @@
-use crate::{Benchmark, Rule, Severity};
+use crate::parse::{Benchmark, Rule, Severity};
 
 /// Load a benchmark given the string of an XCCDF v1.1 xml data.
 pub fn load_v1_1(xml: &str) -> Option<Benchmark> {

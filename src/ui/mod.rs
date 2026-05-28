@@ -14,11 +14,13 @@ use iced::{
         sensor, space, stack, svg, text, text_input, toggler, tooltip,
     },
 };
-use stig_view_core::CKLStatus;
 
-use crate::app::*;
-use crate::ui::styles::*;
-use crate::widgets::{markdown, selectable_text};
+use crate::{
+    app::*,
+    parse::ckl::CKLStatus,
+    ui::styles::*,
+    widgets::{markdown, selectable_text},
+};
 
 /// The default seperation between elements.
 /// I use magic values around because they look better.
@@ -64,10 +66,10 @@ impl App {
     where
         Message: 'a,
     {
+        use iced::mouse::Interaction;
         use iced::window::Direction::{
             East, North, NorthEast, NorthWest, South, SouthEast, SouthWest, West,
         };
-        use iced::mouse::Interaction;
 
         // There are a few mouse areas here.
         // Without window decorations, we need to handle windoe drag and click resizing ourselves.
@@ -584,13 +586,15 @@ impl App {
         // Stack the content with a container that fades in and out.
         // This acts as animation, showing the user the STIG has changed when
         // a new STIG is selected.
-        stack![
+        container(stack![
             lazy_widget,
             container(space())
                 .width(Fill)
                 .height(Fill)
                 .style(fade_overlay(1.0 - self.main_col_opacity))
-        ]
+        ])
+        .width(Fill)
+        .height(Fill)
         .into()
     }
 
@@ -902,7 +906,7 @@ impl App {
                     .style(no_button)
                     .padding(0)
                     .on_press(Message::OpenURL(
-                        "https://github.com/joshuardecker/stig-view/releases"
+                        "https://github.com/joshuardecker/xylok-view/releases"
                     )),
                 space().width(SEPERATION * 0.5),
             ]

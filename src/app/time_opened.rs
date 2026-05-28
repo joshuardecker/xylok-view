@@ -47,7 +47,7 @@ impl TimeLastOpened {
         use std::fs::read_to_string;
 
         let mut save_dir = dirs::data_local_dir()?;
-        save_dir.push("stig-view");
+        save_dir.push("xylok-view");
         save_dir.push("saved_when.toml");
 
         let saved_when_str = read_to_string(save_dir).ok()?;
@@ -69,7 +69,7 @@ impl TimeLastOpened {
         };
 
         // Create the dir if it does not exist.
-        save_dir.push("stig-view");
+        save_dir.push("xylok-view");
         let _ = create_dir_all(&save_dir);
 
         save_dir.push("saved_when.toml");
